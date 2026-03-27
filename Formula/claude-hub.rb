@@ -1,18 +1,23 @@
 class ClaudeHub < Formula
   desc "Visual dashboard for managing Claude Code harness configuration"
   homepage "https://github.com/WontaeKim89/claude-hub"
+  # GitHub tarball은 참조용. 실제 설치는 PyPI wheel에서 수행 (소스 빌드 없음)
   url "https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.3.1.tar.gz"
   sha256 "3dbf43c2f806b2a6465b86cdf74ec3145bc135659a60ec9a1835ae32fb57b36a"
   license "MIT"
 
   depends_on "python@3.13"
-  depends_on "uv"
 
   def install
-    # uv로 venv 생성 + PyPI wheel 설치 (pip보다 빠르고 캐시 문제 없음)
     venv_dir = libexec
-    system "uv", "venv", "--python", "python3.13", venv_dir.to_s
-    system "uv", "pip", "install", "--python", (venv_dir/"bin/python").to_s, "claude-hub==#{version}"
+    venv_python = venv_dir/"bin/python"
+    venv_pip = venv_dir/"bin/pip"
+
+    # venv 생성
+    system "python3.13", "-m", "venv", venv_dir.to_s
+
+    # PyPI wheel 설치 (소스 빌드 없음 — Xcode/hatchling 불필요)
+    system venv_pip, "install", "--no-cache-dir", "claude-hub==#{version}"
 
     # CLI 스크립트
     (bin/"claude-hub").write_env_script venv_dir/"bin/claude-hub", PATH: "#{venv_dir}/bin:#{HOMEBREW_PREFIX}/bin:$PATH"
@@ -25,7 +30,7 @@ class ClaudeHub < Formula
 
     venv_python = libexec/"bin/python"
 
-    # launcher.py — uvicorn 서버 시작 + 브라우저 오픈
+    # launcher.py
     (libexec/"launcher.py").write <<~PYTHON
       import os, sys, time, signal, urllib.request, threading, webbrowser
       LOCK = os.path.expanduser("~/.claude-hub/app.lock")
@@ -70,7 +75,6 @@ class ClaudeHub < Formula
           webview.start()
       except ImportError:
           webbrowser.open(URL)
-          import select
           print("ClaudeHub running at " + URL + " — press Ctrl+C to stop")
           try:
               while True: time.sleep(60)
@@ -79,11 +83,10 @@ class ClaudeHub < Formula
       cleanup()
     PYTHON
 
-    # .app 번들 구조 생성
+    # .app 번들
     macos_dir = app_dir/"Contents/MacOS"
     macos_dir.mkpath
 
-    # 실행 스크립트
     launcher = macos_dir/"ClaudeHub"
     launcher.write <<~SHELL
       #!/bin/bash
@@ -91,7 +94,6 @@ class ClaudeHub < Formula
     SHELL
     launcher.chmod 0755
 
-    # Info.plist
     (app_dir/"Contents/Info.plist").write <<~PLIST
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -119,21 +121,17 @@ class ClaudeHub < Formula
       </plist>
     PLIST
 
-    # codesign (ad-hoc)
     system "codesign", "--force", "--deep", "--sign", "-", app_dir.to_s
-
-    ohai "ClaudeHub.app installed to /Applications — launch from Spotlight"
+    ohai "ClaudeHub.app installed to /Applications"
   end
 
   def caveats
     <<~EOS
       ClaudeHub.app has been installed to /Applications.
 
-      Note: Spotlight may not index unsigned apps.
-      You can launch ClaudeHub by:
-        1. Open Finder → /Applications → double-click ClaudeHub
-        2. Or run in terminal: claude-hub
-        3. Or drag ClaudeHub.app to your Dock for quick access
+      Launch by:
+        1. Finder → Applications → ClaudeHub (or drag to Dock)
+        2. Terminal: claude-hub
     EOS
   end
 
