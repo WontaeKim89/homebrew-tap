@@ -2,8 +2,8 @@ class ClaudeHub < Formula
   desc "Visual dashboard for managing Claude Code harness configuration"
   homepage "https://github.com/WontaeKim89/claude-hub"
   # GitHub tarball은 참조용. 실제 설치는 PyPI wheel에서 수행 (소스 빌드 없음)
-  url "https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.3.5.tar.gz"
-  sha256 "b8e75ae2edd352206f5bc1ad743210afa0c899b656dc971f31d410f339cf1c0e"
+  url "https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.3.6.tar.gz"
+  sha256 "ac2f31d672474f7ff6e52956af0ea2770e7df43b3e5cb692876fd153a9c7c608"
   license "MIT"
 
   depends_on "python@3.13"
@@ -94,6 +94,12 @@ class ClaudeHub < Formula
     SHELL
     launcher.chmod 0755
 
+    # 아이콘 복사 (PyPI wheel의 static/ 안에 포함됨)
+    resources_dir = app_dir/"Contents/Resources"
+    resources_dir.mkpath
+    icns_src = libexec/"lib/python3.13/site-packages/claude_hub/assets/claude-hub.icns"
+    cp icns_src, resources_dir/"ClaudeHub.icns" if icns_src.exist?
+
     (app_dir/"Contents/Info.plist").write <<~PLIST
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -108,6 +114,8 @@ class ClaudeHub < Formula
           <key>CFBundleVersion</key>
           <string>#{version}</string>
           <key>CFBundleExecutable</key>
+          <string>ClaudeHub</string>
+          <key>CFBundleIconFile</key>
           <string>ClaudeHub</string>
           <key>CFBundlePackageType</key>
           <string>APPL</string>
