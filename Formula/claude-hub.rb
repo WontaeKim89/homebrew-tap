@@ -2,8 +2,8 @@ class ClaudeHub < Formula
   desc "Visual dashboard for managing Claude Code harness configuration"
   homepage "https://github.com/WontaeKim89/claude-hub"
   # GitHub tarball은 참조용. 실제 설치는 PyPI wheel에서 수행 (소스 빌드 없음)
-  url "https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.3.6.tar.gz"
-  sha256 "ac2f31d672474f7ff6e52956af0ea2770e7df43b3e5cb692876fd153a9c7c608"
+  url"https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.3.7.tar.gz"
+  sha256 "74ac0a0985b9d56eaa10dd9a1d802407082fc744  -"
   license "MIT"
 
   depends_on "python@3.13"
