@@ -3,7 +3,7 @@ class ClaudeHub < Formula
   homepage "https://github.com/WontaeKim89/claude-hub"
   # GitHub tarball은 참조용. 실제 설치는 PyPI wheel에서 수행 (소스 빌드 없음)
   url"https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.3.7.tar.gz"
-  sha256 "74ac0a0985b9d56eaa10dd9a1d802407082fc744  -"
+  sha256 "75f6219c9a48e1bcb13efd799424754a01455b05f1142a284d60940f7ce325f5"
   license "MIT"
 
   depends_on "python@3.13"
