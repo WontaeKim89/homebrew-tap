@@ -6,16 +6,13 @@ class ClaudeHub < Formula
   license "MIT"
 
   depends_on "python@3.13"
+  depends_on "uv"
 
   def install
-    python3 = "python3.13"
-
-    # venv 생성 + PyPI wheel 설치 (프론트엔드 static 포함)
+    # uv로 venv 생성 + PyPI wheel 설치 (pip보다 빠르고 캐시 문제 없음)
     venv_dir = libexec
-    system python3, "-m", "venv", venv_dir.to_s
-    venv_pip = venv_dir/"bin/pip"
-    system venv_pip, "install", "--upgrade", "pip"
-    system venv_pip, "install", "claude-hub==#{version}"
+    system "uv", "venv", "--python", "python3.13", venv_dir.to_s
+    system "uv", "pip", "install", "--python", (venv_dir/"bin/python").to_s, "claude-hub==#{version}"
 
     # CLI 스크립트
     (bin/"claude-hub").write_env_script venv_dir/"bin/claude-hub", PATH: "#{venv_dir}/bin:#{HOMEBREW_PREFIX}/bin:$PATH"
