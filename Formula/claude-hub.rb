@@ -6,36 +6,25 @@ class ClaudeHub < Formula
   license "MIT"
 
   depends_on "python@3.13"
-  depends_on "node"
+  # Node.js 불필요: PyPI wheel에 빌드된 프론트엔드가 포함됨
 
   def install
     python3 = "python3.13"
 
     # venv 생성
     venv_dir = libexec
-    system python3, "-m", "venv", "--system-site-packages", venv_dir.to_s
+    system python3, "-m", "venv", venv_dir.to_s
     venv_pip = venv_dir/"bin/pip"
 
-    # PyPI에서 wheel로 설치 (hatchling 빌드 문제 우회)
+    # PyPI wheel로 설치 (프론트엔드 static 파일 포함, npm 빌드 불필요)
     system venv_pip, "install", "--upgrade", "pip"
     system venv_pip, "install", "claude-hub==#{version}"
 
-    # 프론트엔드 빌드
-    cd "src/client" do
-      system "npm", "install"
-      system "npm", "run", "build"
-    end
-
-    # 빌드된 정적 파일 복사
-    static_dir = venv_dir/"lib/python3.13/site-packages/claude_hub/static"
-    mkdir_p static_dir
-    cp_r "src/client/dist/.", static_dir
-
-    # bin 링크
+    # CLI 실행 스크립트 생성
     (bin/"claude-hub").write_env_script venv_dir/"bin/claude-hub", PATH: "#{venv_dir}/bin:#{HOMEBREW_PREFIX}/bin:$PATH"
   end
 
   test do
-    assert_match "claude-hub", shell_output("#{bin}/claude-hub --help 2>&1", 0)
+    assert_match "usage", shell_output("#{bin}/claude-hub --help 2>&1")
   end
 end
