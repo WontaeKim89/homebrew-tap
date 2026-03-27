@@ -3,8 +3,8 @@ class ClaudeHub < Formula
 
   desc "Visual dashboard for managing Claude Code harness configuration"
   homepage "https://github.com/WontaeKim89/claude-hub"
-  url "https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.2.0.tar.gz"
-  sha256 "00983115d956d2f4e7789a0f3809e82db4ee53b25df5ecbe61b5b159980af4cc"
+  url "https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.3.0.tar.gz"
+  sha256 "4fec6a6831fdc7c6e8f180ef2119f14ed097d3a06aaa0e9ab29ac1482fd4f61d"
   license "MIT"
 
   depends_on "python@3.13"
