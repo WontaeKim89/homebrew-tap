@@ -1,6 +1,4 @@
 class ClaudeHub < Formula
-  include Language::Python::Virtualenv
-
   desc "Visual dashboard for managing Claude Code harness configuration"
   homepage "https://github.com/WontaeKim89/claude-hub"
   url "https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.3.0.tar.gz"
@@ -11,9 +9,16 @@ class ClaudeHub < Formula
   depends_on "node"
 
   def install
-    # Python 가상환경 생성 및 패키지 설치
-    venv = virtualenv_create(libexec, "python3.13")
-    venv.pip_install_and_link buildpath
+    python3 = "python3.13"
+
+    # venv 생성
+    venv_dir = libexec
+    system python3, "-m", "venv", "--system-site-packages", venv_dir.to_s
+    venv_pip = venv_dir/"bin/pip"
+
+    # PyPI에서 wheel로 설치 (hatchling 빌드 문제 우회)
+    system venv_pip, "install", "--upgrade", "pip"
+    system venv_pip, "install", "claude-hub==#{version}"
 
     # 프론트엔드 빌드
     cd "src/client" do
@@ -21,10 +26,13 @@ class ClaudeHub < Formula
       system "npm", "run", "build"
     end
 
-    # 빌드된 정적 파일을 패키지 내부로 복사
-    static_dir = libexec/"lib/python3.13/site-packages/claude_hub/static"
+    # 빌드된 정적 파일 복사
+    static_dir = venv_dir/"lib/python3.13/site-packages/claude_hub/static"
     mkdir_p static_dir
     cp_r "src/client/dist/.", static_dir
+
+    # bin 링크
+    (bin/"claude-hub").write_env_script venv_dir/"bin/claude-hub", PATH: "#{venv_dir}/bin:#{HOMEBREW_PREFIX}/bin:$PATH"
   end
 
   test do
