@@ -1,8 +1,8 @@
 class ClaudeHub < Formula
   desc "Visual dashboard for managing Claude Code harness configuration"
   homepage "https://github.com/WontaeKim89/claude-hub"
-  url "https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.3.0.tar.gz"
-  sha256 "4fec6a6831fdc7c6e8f180ef2119f14ed097d3a06aaa0e9ab29ac1482fd4f61d"
+  url "https://github.com/WontaeKim89/claude-hub/archive/refs/tags/v0.3.1.tar.gz"
+  sha256 "3dbf43c2f806b2a6465b86cdf74ec3145bc135659a60ec9a1835ae32fb57b36a"
   license "MIT"
 
   depends_on "python@3.13"
@@ -131,8 +131,12 @@ class ClaudeHub < Formula
   def caveats
     <<~EOS
       ClaudeHub.app has been installed to /Applications.
-      Launch it from Spotlight (Cmd+Space → "ClaudeHub") or run:
-        claude-hub
+
+      Note: Spotlight may not index unsigned apps.
+      You can launch ClaudeHub by:
+        1. Open Finder → /Applications → double-click ClaudeHub
+        2. Or run in terminal: claude-hub
+        3. Or drag ClaudeHub.app to your Dock for quick access
     EOS
   end
 
